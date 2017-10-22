@@ -68,7 +68,7 @@ body {
 }
 
 .margTop{
-  margin-top:  35px;
+  margin-top:  30px;
 }
 
 .hidden{
@@ -76,5 +76,20 @@ body {
 }
 
 .rb{
-  
+
 }
+
+.win{
+  border : outset;
+  background-color: green;
+ }
+
+ .loose{
+  border : outset;
+  background-color: red;
+ }
+
+ .default {
+  border : none;
+  background-color: none;
+ }
