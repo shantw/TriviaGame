@@ -3,7 +3,7 @@ var questions = [{q: "What year was the National Basketball Association first es
 				  {q: "What year did the NBA-ABA merger occur?", a:["1970","1973","1974"],rightAnswer:"1976"},
 				  {q: "Which country has won the World Cup 5 times?", a:[ "Germany","Italy","England"], rightAnswer:"Brazil"},
 				  {q: "Which nation has reached the World Cup final three times, but never won?", a:[ "Spain","Italy","France"], rightAnswer:"Netherlands"},
-				  {q: "Which team was the first from Africa to reach the quarterfinals of a World Cup?", a:["Brazil","Cameroon","Argentina"], rightAnswer:"Ghana"}
+				  {q: "Which team eliminated the USA from the last two World Cups?", a:["Brazil","Cameroon","Argentina"], rightAnswer:"Ghana"}
 ];
 var time = 0;
 var intervalId;
@@ -12,8 +12,12 @@ var questionTime = 7;
 var qIndex = 0;
 var answerNumber;	
 var questionCount = 0 ;	 
-var maxQuestions =5; 
+var correctAnswerCount = 0;
+var wrongAnswerCount = 0 ;
+var unansweredCount = 0;
+var maxQuestions =6; 
 var clicked = false;
+var audio = new Audio("https://p.scdn.co/mp3-preview/ed5a443bc86176135ebca8a114f66f4d814d4c90");
 
 $(document).ready(function() {
 
@@ -24,11 +28,14 @@ $("#btnNewGame").on("click", function() {
 $("#btnEndGame").on("click", function(e) {
   	e.preventDefault();
   	stop();
+  	alert("Game is Ended");
   	//setTimeout(reset, 5000,1,2);
 });
 
 $(".rb").on("click", function(e) {
+  
   if (!clicked){
+  	audio.pause();
   	clicked = true;
 	e.preventDefault();
 	stop();
@@ -38,14 +45,9 @@ $(".rb").on("click", function(e) {
   	else{
   		wrongAnswer($(this).attr("label-index"),answerNumber);  		
     }
-    disableRadioBtn(true);
-    if (questionCount === maxQuestions) {
-    	gameStatus = 'end';
-    	stop();
-    	//call gameStats();
-    }
-    else{
-	    setTimeout(reset, 5000,$(this).attr("label-index"),answerNumber);
+   disableRadioBtn(true);
+   setTimeout(reset, 5000,$(this).attr("label-index"),answerNumber);
+   if (questionCount < maxQuestions) {
 	    setTimeout(loadQuestion,5010);
 	    setTimeout(run,5010);
   	}
@@ -54,16 +56,18 @@ $(".rb").on("click", function(e) {
 
 function newGame(){
 
-   if (gameStatus==="new"){
-
+   //if (gameStatus==="new"){
+   	   audio.play();
+   	   questionCount = 0 ;	 
+       correctAnswerCount = 0;
+       wrongAnswerCount = 0 ;
+       unansweredCount = 0;
    		$("#timeLeft").text("Time Remaining : 00:00");
    		run();
 		loadQuestion();
-		gameStatus = "inprogress";
-  	}
-  	else{
+		//gameStatus = "inprogress";
+//  	}
 
-  	}
 }
 
 
@@ -98,6 +102,7 @@ function loadQuestion(){
 }
 
 function wrongAnswer(keyWrong, keyRight){
+	wrongAnswerCount++;
 	$("#diva" + keyWrong).addClass("loose");
   	$("#diva" + keyRight).addClass("win");	
   	$("#labela"+ keyWrong).text( $("#a"+keyWrong).attr("data-answer") + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + 'Wrong');
@@ -106,6 +111,7 @@ function wrongAnswer(keyWrong, keyRight){
 }
 
 function correctAnswer(){
+	correctAnswerCount++;
 	$("#diva" + answerNumber).addClass("win");
   	$("#labela"+ answerNumber).text( $("#a"+ answerNumber).attr("data-answer") + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + 'Correct');
 }
@@ -115,20 +121,35 @@ function timeIsUp(){
 	//$("#diva" + answerNumber).prepend("<div>Time is Up!</div>");
 	stop();
 	disableRadioBtn(true);
+	unansweredCount++;
 	$("#diva" + answerNumber).addClass("win");
   	$("#labela"+ answerNumber).text( $("#a"+ answerNumber).attr("data-answer") + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + 'Time Is Up!'); // + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' +'Thi is the correct answer');
-	    
-	if (questionCount === maxQuestions) {
-    	gameStatus = 'end';
-    	stop();
-    	//call gameStats();
-    }
-    else{
-	    setTimeout(reset, 5000,0,answerNumber);
+	setTimeout(reset, 5000,0,answerNumber);
+	if (questionCount < maxQuestions) {
 	    setTimeout(loadQuestion,5010);
 	    setTimeout(run,5010);
   	}
+}
 
+
+function displayGameStats(){
+
+	for (i=1; i <5 ; i++){
+
+		$("#a"+ i).empty();
+		$("#labela" + i).empty();
+		$("#a"+i).addClass("hidden");
+	}
+	$("#question").text("All Done! Here is how you did : ");
+	$("#question").append("<div></div>");
+	$("#question").append("<br>");
+	$("#question").append("<div>" + "Total Questions : " + maxQuestions + "</div>");
+	$("#question").append("<br>");
+	$("#question").append("<div>" + "Correct Answers : " + correctAnswerCount + "</div>");
+	$("#question").append("<br>");
+	$("#question").append("<div>" + "Wrong Answers : " + wrongAnswerCount + "</div>");		
+	$("#question").append("<br>");
+	$("#question").append("<div>" + "Unanswered : " + unansweredCount + "</div>");
 }
 
 function run() {
@@ -153,21 +174,24 @@ function count() {
 
 function  reset(looseIndx,winIndx) {
 
-    time = 0;
-   	if (qIndex === questions.length) {
+    
+   	if (qIndex === questions.length-1) {
     	qIndex = 0;
     }
     else{
     	qIndex++;
     }
-    //gameStatus = 'new';
     clicked = false;
-    //if (!looseIndx === 0){
-       $("#diva" + looseIndx).removeClass("loose");
-    //}
-  	$("#diva" + winIndx).removeClass("win");	
-    $("#timeLeft").text("00:00");
-
+	time = 0;
+	$("#diva" + looseIndx).removeClass("loose");
+	$("#diva" + winIndx).removeClass("win");
+    if (questionCount === maxQuestions) {
+    	displayGameStats();
+    	gameStatus = 'end';
+    }
+    else {
+      $("#timeLeft").text("00:00");
+    }
 }
 
 function getRandomNumber() {
