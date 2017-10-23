@@ -3,12 +3,19 @@ var questions = [{q: "What year was the National Basketball Association first es
 				  {q: "What year did the NBA-ABA merger occur?", a:["1970","1973","1974"],rightAnswer:"1976"},
 				  {q: "Which country has won the World Cup 5 times?", a:[ "Germany","Italy","England"], rightAnswer:"Brazil"},
 				  {q: "Which nation has reached the World Cup final three times, but never won?", a:[ "Spain","Italy","France"], rightAnswer:"Netherlands"},
-				  {q: "Which team eliminated the USA from the last two World Cups?", a:["Brazil","Cameroon","Argentina"], rightAnswer:"Ghana"}
-];
+				  {q: "Which team eliminated the USA from the last two World Cups?", a:["Brazil","Cameroon","Argentina"], rightAnswer:"Ghana"},
+				  {q: "Which team won its only World Cup in 2010?", a: ["Italy","Portugal","France"],rightAnswer:"Spain"},
+				  {q: "What number did Michael Jordan wear when he came out of retirement for the end of the 1994-1995 season?", a : ["23","32","22"],rightAnswer:"45"},
+				  {q: "Since the NBA began handing out Most Valuable Player awards in 1956, who has won the most MVP trophies through the 2013-14 season?", a : ["Wilt Chamberlain","Michael Jordan","Bill Russell"],rightAnswer:"Kareem Abdul-Jabbar"},
+				  {q: "Which team has won the World Cup twice?",a : ["France","Sweden","Spain"],rightAnswer:"Argentina"},
+				  {q: "Which team has qualified for every World Cup since 1990?", a:["Cameroon","Portugal","Mexico"], rightAnswer:"USA" },
+				  {q: "Who is the NBA's career leading scorer?", a:["Karl Malone","Kobe Bryant","Michael Jordan"], rightAnswer:"Kareem Abdul-Jabbar" }
+				  ];
 var time = 0;
 var intervalId;
+var intervalId2;
 var gameStatus = "new";
-var questionTime = 7;
+var questionTime = 30;
 var qIndex = 0;
 var answerNumber;	
 var questionCount = 0 ;	 
@@ -17,7 +24,7 @@ var wrongAnswerCount = 0 ;
 var unansweredCount = 0;
 var maxQuestions =6; 
 var clicked = false;
-var audio = new Audio("https://p.scdn.co/mp3-preview/ed5a443bc86176135ebca8a114f66f4d814d4c90");
+//var audio = new Audio("bg.mp3");
 
 $(document).ready(function() {
 
@@ -27,7 +34,7 @@ $("#btnNewGame").on("click", function() {
 
 $("#btnEndGame").on("click", function(e) {
   	e.preventDefault();
-  	stop();
+  	stop(intervalId);
   	alert("Game is Ended");
   	//setTimeout(reset, 5000,1,2);
 });
@@ -35,10 +42,10 @@ $("#btnEndGame").on("click", function(e) {
 $(".rb").on("click", function(e) {
   
   if (!clicked){
-  	audio.pause();
+  	//audio.pause();
   	clicked = true;
 	e.preventDefault();
-	stop();
+	stop(intervalId);
   	if ($(this).attr("data-value") === "true"){
   		correctAnswer();
   	}																							
@@ -57,7 +64,6 @@ $(".rb").on("click", function(e) {
 function newGame(){
 
    //if (gameStatus==="new"){
-   	   audio.play();
    	   questionCount = 0 ;	 
        correctAnswerCount = 0;
        wrongAnswerCount = 0 ;
@@ -119,7 +125,7 @@ function correctAnswer(){
 function timeIsUp(){
 	//alert("Time is Up!, See the correct answer after clicking ok");
 	//$("#diva" + answerNumber).prepend("<div>Time is Up!</div>");
-	stop();
+	stop(intervalId);
 	disableRadioBtn(true);
 	unansweredCount++;
 	$("#diva" + answerNumber).addClass("win");
@@ -156,8 +162,8 @@ function run() {
       intervalId = setInterval(count, 1000);
  }
 
-function stop() {
-      clearInterval(intervalId);
+function stop(id) {
+      clearInterval(id);
  }
 
 function count() {

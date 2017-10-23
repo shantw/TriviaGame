@@ -46,8 +46,9 @@ body {
   color: black;
   margin-right: 10px;
   font-size: 10px;
+  text-align: center;
   width: 90px;
-  height: 32px;
+  height: 36px;
   border-style: outset;
 }
 
