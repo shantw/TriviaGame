@@ -24,7 +24,10 @@ var wrongAnswerCount = 0 ;
 var unansweredCount = 0;
 var maxQuestions =6; 
 var clicked = false;
-//var audio = new Audio("bg.mp3");
+var winAudio = new Audio("win.wav");
+var loseAudio = new Audio("lose.wav");
+var bgAudio = new Audio("bg.wav");
+var timeUpAudio = new Audio("timeisup.wav");
 
 $(document).ready(function() {
 
@@ -42,14 +45,17 @@ $("#btnEndGame").on("click", function(e) {
 $(".rb").on("click", function(e) {
   
   if (!clicked){
-  	//audio.pause();
+  	//music.pause();
   	clicked = true;
+  	bgAudio.pause();
 	e.preventDefault();
 	stop(intervalId);
   	if ($(this).attr("data-value") === "true"){
+  		winAudio.play();
   		correctAnswer();
   	}																							
   	else{
+  		loseAudio.play();
   		wrongAnswer($(this).attr("label-index"),answerNumber);  		
     }
    disableRadioBtn(true);
@@ -80,6 +86,7 @@ function newGame(){
 function loadQuestion(){
 	var j = 0;
 	$("#question").text(questions[qIndex].q);
+	bgAudio.play();
 	answerNumber = getRandomNumber();
 	questionCount++;
 	for (i=1; i <5 ; i++){
@@ -117,7 +124,6 @@ function wrongAnswer(keyWrong, keyRight){
 }
 
 function correctAnswer(){
-	correctAnswerCount++;
 	$("#diva" + answerNumber).addClass("win");
   	$("#labela"+ answerNumber).text( $("#a"+ answerNumber).attr("data-answer") + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + 'Correct');
 }
@@ -126,6 +132,8 @@ function timeIsUp(){
 	//alert("Time is Up!, See the correct answer after clicking ok");
 	//$("#diva" + answerNumber).prepend("<div>Time is Up!</div>");
 	stop(intervalId);
+	bgAudio.pause();
+	timeUpAudio.play();
 	disableRadioBtn(true);
 	unansweredCount++;
 	$("#diva" + answerNumber).addClass("win");
